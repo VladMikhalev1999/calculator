@@ -72,7 +72,7 @@
 						if (count($st) != 0) {
 							$d = $st[count($st) - 1];
 							if ($d == "%") {
-								array_push($out, $d);
+								array_push($out, array_pop($st));
 							}
 						}
 						array_push($st, "%");
@@ -81,7 +81,7 @@
 						if (count($st) != 0) {
 							$d = $st[count($st) - 1];
 							if ($d == "*" || $d == "/" || $d == "%") {
-								array_push($out, $d);
+								array_push($out, array_pop($st));
 							}
 						}
 						array_push($st, "/");
@@ -147,6 +147,7 @@
 			return !$this->opera($s);
 		}
 		private function correct($arr) {
+			$cnt = 0;
 			if (count($arr) == 1) {
 				if ($this->opera($arr[0]) || $arr[0] == "(" || $arr[0] == ")") return false;
 			}
@@ -155,12 +156,14 @@
 				if ($i == 0 && $this->opera($s)) {
 					return false;
 				} else if ($s == "(") {
+					$cnt++;
 					if ($this->opera($arr[$i + 1])) return false;
 				} else if ($s == ")") {
-					if ($this->number($arr[$i + 1])) return false;
+					$cnt--;
+					if ($arr[$i + 1] != ")" && $this->number($arr[$i + 1])) return false;
 				}
 				else if ($this->opera($s)) {
-					if ($this->opera($arr[$i + 1])) { $lastError = ERROR_02; return false; }
+					if ($arr[$i + 1] != "(" && $this->opera($arr[$i + 1])) { $lastError = ERROR_02; return false; }
 				} else {
 					if ($this->number($arr[$i + 1]) && $arr[$i + 1] != ")") return false;
 				}

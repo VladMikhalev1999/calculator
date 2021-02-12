@@ -85,7 +85,15 @@
 		})
 		document.getElementById('delAll').addEventListener('click', (event) => {
 			document.getElementById('pattern').value = ""
+			document.getElementById('expRes').value = ""
 			len = 0
 			bMinus = false
 		})
+		window.onkeydown = (event) => {
+			if (event.code == "Enter") {
+				send_pattern()
+			} else if (event.code == "Space") {
+				send_pattern(true, a, b ,c)
+			}
+		}
 	}

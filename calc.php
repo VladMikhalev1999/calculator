@@ -105,7 +105,7 @@
 				<p><button id='sqA'>A</button></p>
 				<p><button id='sqB'>B</button></p>
 				<p><button type='submit' id='sqC'>C</button></p>
-				<p><button type='submit' onclick='send_pattern()'>=</button></p>
+				<p><button id='equal' type='submit' onclick='send_pattern()'>=</button></p>
 			</div>
 			<div class="clear"></div>
 			</div>

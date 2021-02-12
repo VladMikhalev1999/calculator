@@ -34,9 +34,9 @@
 			foreach ($this->prn as $op) {
 				switch ($op) {
 					case "+": case "-": case "*": case "/": case "%":
-						$op1 = (int)array_pop($st);
+						$op1 = (float)array_pop($st);
 						if ($op1 < -2147483648 || $op1 > 2147483647) return ERROR_03;
-						$op2 = (int)array_pop($st);
+						$op2 = (float)array_pop($st);
 						if ($op2 < -2147483648 || $op2 > 2147483647) return ERROR_03;
 						switch ($op) {
 							case "+":
