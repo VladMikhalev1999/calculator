@@ -8,11 +8,10 @@
 	define ("ERROR_06", "Ошибка деления на 0!");
 	define ("ERROR_07", "Неверная запись вычисляемого выражения!");
 
-	$lastError = ERROR_00;
-
 	class PRNChecker {
 		#наше выражение в виде строки
 		private $pattern = "";
+		private $lastError = ERROR_00;
 		#конструктор
 		function __construct($pattern) {
 			$this->pattern = $pattern;
@@ -149,24 +148,32 @@
 		private function correct($arr) {
 			$cnt = 0;
 			if (count($arr) == 1) {
-				if ($this->opera($arr[0]) || $arr[0] == "(" || $arr[0] == ")") return false;
+				if ($this->opera($arr[0]) || $arr[0] == "(" || $arr[0] == ")") { 
+					$this->lastError = ERROR_07; 
+					return false;
+				}
 			}
 			else for ($i = 0; $i < count($arr) - 1; $i++) {
 				$s = $arr[$i];
 				if ($i == 0 && $this->opera($s)) {
+					$this->lastError = ERROR_07; 
 					return false;
 				} else if ($s == "(") {
 					$cnt++;
-					if ($this->opera($arr[$i + 1])) return false;
+					if ($this->opera($arr[$i + 1])) { $this->lastError = ERROR_07; return false; }
 				} else if ($s == ")") {
 					$cnt--;
-					if ($arr[$i + 1] != ")" && $this->number($arr[$i + 1])) return false;
+					if ($arr[$i + 1] != ")" && $this->number($arr[$i + 1])) { $this->lastError = ERROR_07; return false; }
 				}
 				else if ($this->opera($s)) {
-					if ($arr[$i + 1] != "(" && $this->opera($arr[$i + 1])) { $lastError = ERROR_02; return false; }
+					if ($arr[$i + 1] != "(" && $this->opera($arr[$i + 1])) { $this->lastError = ERROR_02; return false; }
 				} else {
-					if ($this->number($arr[$i + 1]) && $arr[$i + 1] != ")") return false;
+					if ($this->number($arr[$i + 1]) && $arr[$i + 1] != ")") { $this->lastError = ERROR_07; return false; }
 				}
+			}
+			if ($this->opera($arr[count($arr) - 1])) { 
+				$this->lastError = ERROR_02; 
+				return false; 
 			}
 			return true;
 		}
@@ -184,18 +191,16 @@
 			}
 			return $x;
 		}
-		#основная функция для проверки правильности выражения
 		public function check() {
 			if (strlen($this->pattern) > 65536) return ERROR_04;
-			#превращаем строку в массив "токенов" (числа могут быть многозначные)
 			$arr = $this->format();
 			if (!is_array($arr)) return ERROR_01;
 			if (count($arr) == 0) {
-				array_push($arr, "0");
+				return ERROR_02;
 			}
 			$arr = $this->replaceUnarMinuses($arr);
 			if (!$this->correct($arr)) {
-				return ERROR_07;
+				return $this->lastError;
 			}
 			if (count($arr) > 30) return ERROR_05;
 			$parr = $this->postfix($arr);

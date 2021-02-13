@@ -1,6 +1,9 @@
 <?php 
+	date_default_timezone_set('Asia/Yekaterinburg');
+
 	include "mathCalc.php";
 	include "square.php";
+	include "log.php";
 
 	$p = "";
 	$result = "";
@@ -15,16 +18,23 @@
 			$result = $calc->calculate();
 			if (is_array($result)) {
 				$result = $result[0];
+				writeLog($p . "\t" . $result);
 			} else {
 				$lastError = $result;
+				writeLog($p . "\t" . $lastError);
 			}
+		} else {
+			$lastError = $result;
+			writeLog($p . "\t" . $lastError);
 		}
+		writeLog();
 	} else if (isset($_REQUEST["a"])) {
 		$a = $_REQUEST["a"]; $b = $_REQUEST["b"]; $c = $_REQUEST["c"];
 		$a = str_replace("^", "+", $a); $a = str_replace("@", "%", $a);
 		$b = str_replace("^", "+", $b); $b = str_replace("@", "%", $b);
 		$c = str_replace("^", "+", $c); $c = str_replace("@", "%", $c);
-		$rpnf = array(); $sq = array();
+		$rpnf = array(); $sq = array(); $i = 0;
+		$abc = [$a, $b, $c];
 		array_push($rpnf, new PRNChecker($a));
 		array_push($rpnf, new PRNChecker($b));
 		array_push($rpnf, new PRNChecker($c));
@@ -35,20 +45,30 @@
 				$result = $calc->calculate();
 				if (is_array($result)) {
 					array_push($sq, $result[0]);
+					writeLog($abc[$i] . "\t" . $result[0]);
+					$result = $result[0];
 				} else {
 					$lastError = $result;
+					writeLog($abc[$i] . "\t" . $lastError);
 				}
+			} else {
+				$lastError = $result;
+				writeLog($abc[$i] . "\t" . $lastError);
 			}
+			$i++;
 		} 
 		if (count($sq) == 3) {
 			$sqEqCalc = new SquareEquationCalculator($sq);
 			$result = $sqEqCalc->calculate();
 			if (is_array($result)) {
-				$result = "x1= " . $result['1'] . " ; x2= " . $result['2'];
+				$result = "x1 = " . $result['1'] . " ; x2 = " . $result['2'];
+				writeLog("a = " . $sq[0] . " ; b = " . $sq[1] . " ; c = " . $sq[2] . "\t\t" . $result);
 			} else {
 				$lastError = $result;
+				writeLog($lastError);
 			}
 		}
+		writeLog();
 	}
 ?>
 
