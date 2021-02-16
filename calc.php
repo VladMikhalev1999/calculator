@@ -11,11 +11,9 @@
 		$p = $_REQUEST['pattern'];
 		$p = str_replace("^", "+", $p);
 		$p = str_replace("@", "%", $p);
-		$rpnf = new PRNChecker($p);
-		$result = $rpnf->check();
+		$result = check($p);
 		if (is_array($result)) {
-			$calc = new Calculator($result);
-			$result = $calc->calculate();
+			$result = calculate($result);
 			if (is_array($result)) {
 				$result = $result[0];
 				writeLog($p . "\t" . $result);
@@ -35,14 +33,13 @@
 		$c = str_replace("^", "+", $c); $c = str_replace("@", "%", $c);
 		$rpnf = array(); $sq = array(); $i = 0;
 		$abc = [$a, $b, $c];
-		array_push($rpnf, new PRNChecker($a));
-		array_push($rpnf, new PRNChecker($b));
-		array_push($rpnf, new PRNChecker($c));
+		array_push($rpnf, $a);
+		array_push($rpnf, $b);
+		array_push($rpnf, $c);
 		foreach ($rpnf as $s) {
-			$result = $s->check();
+			$result = check($s);
 			if (is_array($result)) {
-				$calc = new Calculator($result);
-				$result = $calc->calculate();
+				$result = calculate($result);
 				if (is_array($result)) {
 					array_push($sq, $result[0]);
 					writeLog($abc[$i] . "\t" . $result[0]);
@@ -58,8 +55,7 @@
 			$i++;
 		} 
 		if (count($sq) == 3) {
-			$sqEqCalc = new SquareEquationCalculator($sq);
-			$result = $sqEqCalc->calculate();
+			$result = calculateSquare($sq[0], $sq[1], $sq[2]);
 			if (is_array($result)) {
 				$result = "x1 = " . $result['1'] . " ; x2 = " . $result['2'];
 				writeLog("a = " . $sq[0] . " ; b = " . $sq[1] . " ; c = " . $sq[2] . "\t\t" . $result);
